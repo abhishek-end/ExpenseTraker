@@ -6,7 +6,9 @@ const initialState = {
 
 const authSlice = createSlice({
   name: "auth",
-  initialState: localStorage.getItem("userinfo") || null,
+  initialState: {
+    user: localStorage.getItem("userinfo") || null,
+  },
   reducers: {
     loginStart: (state, action) => {
       state.user = action.payload;

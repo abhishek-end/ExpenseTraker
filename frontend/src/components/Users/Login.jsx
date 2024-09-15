@@ -7,7 +7,7 @@ import { loginAPI } from "../../services/users/userServices";
 import AlertMessage from "../AlertMessage";
 import { useDispatch } from "react-redux";
 import { loginStart } from "../../redux/slice/authSlice";
-
+import { getUserFromStorage } from "../../utils/getUserfromStorage";
 const validationSchema = Yup.object({
   email: Yup.string()
     .email("Invalid email format")
@@ -16,6 +16,8 @@ const validationSchema = Yup.object({
 });
 
 const LoginForm = () => {
+  console.log(getUserFromStorage());
+
   const dispatch = useDispatch();
 
   const { isError, isPending, error, isSuccess, mutateAsync } = useMutation({
