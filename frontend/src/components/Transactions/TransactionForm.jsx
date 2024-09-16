@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
@@ -7,7 +7,10 @@ import {
   FaRegCommentDots,
   FaWallet,
 } from "react-icons/fa";
-
+import AlertMessage from "../AlertMessage";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { ListCategoryAPI } from "../../services/category/categoryServices";
+import { addTransactionAPI } from "../../services/transaction/transactionServices";
 const validationSchema = Yup.object({
   type: Yup.string()
     .required("Transaction type is required")
@@ -19,8 +22,32 @@ const validationSchema = Yup.object({
   date: Yup.date().required("Date is required"),
   description: Yup.string(),
 });
+import { useNavigate } from "react-router-dom";
 
 const TransactionForm = () => {
+  const navigate = useNavigate();
+  const { isError, isPending, isSuccess, mutateAsync } = useMutation({
+    mutationFn: addTransactionAPI,
+    mutationKey: ["addTransaction"],
+  });
+  const { data } = useQuery({
+    queryKey: ["lists"],
+    queryFn: ListCategoryAPI,
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      amount: "",
+      category: "",
+      date: "",
+      description: "",
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      mutateAsync(values).then((data) => navigate("/categories"));
+    },
+  });
+
   return (
     <form
       onSubmit={formik.handleSubmit}
@@ -33,7 +60,15 @@ const TransactionForm = () => {
         <p className='text-gray-600'>Fill in the details below.</p>
       </div>
       {/* Display alert message */}
-
+      {isError && (
+        <AlertMessage type='error' message='Something Went Wrong  ' />
+      )}
+      {isSuccess && (
+        <AlertMessage type='success' message='Transaction added successfully' />
+      )}
+      {isPending && (
+        <AlertMessage type='loading' message='Login You in .....' />
+      )}
       {/* Transaction Type Field */}
       <div className='space-y-2'>
         <label
@@ -44,8 +79,7 @@ const TransactionForm = () => {
           <span>Type</span>
         </label>
         <select
-          // {...formik.getFieldProps("type")}
-
+          {...formik.getFieldProps("type")}
           id='type'
           className='block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50'
         >
@@ -53,9 +87,9 @@ const TransactionForm = () => {
           <option value='income'>Income</option>
           <option value='expense'>Expense</option>
         </select>
-        {/* {formik.touched.type && formik.errors.type && (
+        {formik.touched.type && formik.errors.type && (
           <p className='text-red-500 text-xs'>{formik.errors.type}</p>
-        )} */}
+        )}
       </div>
 
       {/* Amount Field */}
@@ -66,14 +100,14 @@ const TransactionForm = () => {
         </label>
         <input
           type='number'
-          // {...formik.getFieldProps("amount")}
+          {...formik.getFieldProps("amount")}
           id='amount'
           placeholder='Amount'
           className='w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50'
         />
-        {/* {formik.touched.amount && formik.errors.amount && (
+        {formik.touched.amount && formik.errors.amount && (
           <p className='text-red-500 text-xs italic'>{formik.errors.amount}</p>
-        )} */}
+        )}
       </div>
 
       {/* Category Field */}
@@ -88,14 +122,16 @@ const TransactionForm = () => {
           className='w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50'
         >
           <option value=''>Select a category</option>
+          {data?.map((category) => {
+            return <option key={category?._id}>{category?.name}</option>;
+          })}
         </select>
-        {/* {formik.touched.category && formik.errors.category && (
+        {formik.touched.category && formik.errors.category && (
           <p className='text-red-500 text-xs italic'>
             {formik.errors.category}
           </p>
-        )} */}
+        )}
       </div>
-
       {/* Date Field */}
       <div className='flex flex-col space-y-1'>
         <label htmlFor='date' className='text-gray-700 font-medium'>
@@ -104,15 +140,14 @@ const TransactionForm = () => {
         </label>
         <input
           type='date'
-          // {...formik.getFieldProps("date")}
+          {...formik.getFieldProps("date")}
           id='date'
           className='w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50'
         />
-        {/* {formik.touched.date && formik.errors.date && (
+        {formik.touched.date && formik.errors.date && (
           <p className='text-red-500 text-xs italic'>{formik.errors.date}</p>
-        )} */}
+        )}
       </div>
-
       {/* Description Field */}
       <div className='flex flex-col space-y-1'>
         <label htmlFor='description' className='text-gray-700 font-medium'>
@@ -120,19 +155,18 @@ const TransactionForm = () => {
           Description (Optional)
         </label>
         <textarea
-          //    {...formik.getFieldProps("description")}
+          {...formik.getFieldProps("description")}
           id='description'
           placeholder='Description'
           rows='3'
           className='w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50'
         ></textarea>
-        {/* {formik.touched.description && formik.errors.description && (
+        {formik.touched.description && formik.errors.description && (
           <p className='text-red-500 text-xs italic'>
             {formik.errors.description}
           </p>
-        )} */}
+        )}
       </div>
-
       {/* Submit Button */}
       <button
         type='submit'
