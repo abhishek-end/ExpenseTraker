@@ -3,7 +3,9 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useMutation } from "@tanstack/react-query";
 import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
-
+import { RegisterApi } from "../../services/users/userServices";
+import AlertMessage from "../AlertMessage";
+import { useNavigate } from "react-router-dom";
 //Validations
 const validationSchema = Yup.object({
   username: Yup.string().required("Username is required"),
@@ -14,17 +16,64 @@ const validationSchema = Yup.object({
     .min(8, "Password must be at least 8 characters long")
     .required("Password is required"),
   confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password"), null], "Passwords must match")
+    .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Confirming your password is required"),
 });
 const RegistrationForm = () => {
+  const navigate = useNavigate();
+  const { mutateAsync, isError, isPending, isSuccess, error } = useMutation({
+    mutationFn: RegisterApi,
+    mutationKey: ["Register"],
+  });
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+      username: "",
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      console.log(values);
+      mutateAsync(values)
+        .then((data) => console.log(data))
+        .catch((error) => error);
+    },
+  });
+  useEffect(() => {
+    setTimeout(() => {
+      if (isSuccess) {
+        navigate("/Login");
+      }
+    }, 2000);
+  }, [isError, isPending, isSuccess, error]);
   return (
-    <form className='max-w-md mx-auto my-10 bg-white p-6 rounded-xl shadow-lg space-y-6 border border-gray-200'>
+    <form
+      onSubmit={formik.handleSubmit}
+      className='max-w-md mx-auto my-10 bg-white p-6 rounded-xl shadow-lg space-y-6 border border-gray-200'
+    >
       <h2 className='text-3xl font-semibold text-center text-gray-800'>
         Sign Up
       </h2>
       {/* Display messages */}
-
+      {isError && (
+        <AlertMessage
+          type='error'
+          message='Check Your Username  Email and Password '
+        />
+      )}
+      {isSuccess && (
+        <AlertMessage
+          type='success'
+          message='SuccessFully Created Your account'
+        />
+      )}
+      {isPending && (
+        <AlertMessage
+          type='loading'
+          message='Creating Your account Please Wait ....'
+        />
+      )}
       <p className='text-sm text-center text-gray-500'>
         Join our community now!
       </p>

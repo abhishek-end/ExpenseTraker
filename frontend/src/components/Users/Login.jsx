@@ -7,7 +7,7 @@ import { loginAPI } from "../../services/users/userServices";
 import AlertMessage from "../AlertMessage";
 import { useDispatch } from "react-redux";
 import { loginStart } from "../../redux/slice/authSlice";
-import { getUserFromStorage } from "../../utils/getUserfromStorage";
+import { useNavigate } from "react-router-dom";
 const validationSchema = Yup.object({
   email: Yup.string()
     .email("Invalid email format")
@@ -16,10 +16,7 @@ const validationSchema = Yup.object({
 });
 
 const LoginForm = () => {
-  console.log(getUserFromStorage());
-
   const dispatch = useDispatch();
-
   const { isError, isPending, error, isSuccess, mutateAsync } = useMutation({
     mutationFn: loginAPI,
     mutationKey: ["login"],
@@ -27,8 +24,8 @@ const LoginForm = () => {
 
   const formik = useFormik({
     initialValues: {
-      email: "testing12123@gmail.com",
-      password: "AbhisehkA123",
+      email: "",
+      password: "",
     },
     validationSchema,
     onSubmit: (values) => {
@@ -43,6 +40,14 @@ const LoginForm = () => {
         });
     },
   });
+  const navigate = useNavigate();
+  useEffect(() => {
+    setTimeout(() => {
+      if (isSuccess) {
+        navigate("/profile");
+      }
+    }, 2000);
+  }, [isError, isPending, error, isSuccess]);
   return (
     <form
       onSubmit={formik.handleSubmit}

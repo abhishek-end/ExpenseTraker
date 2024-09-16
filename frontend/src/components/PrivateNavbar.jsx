@@ -1,22 +1,26 @@
 import { Fragment, useEffect } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { json, Link } from "react-router-dom";
+import { json, Link, useNavigate, useNavigation } from "react-router-dom";
 import { IoLogOutOutline } from "react-icons/io5";
 
 import { SiAuthy } from "react-icons/si";
 import { useDispatch } from "react-redux";
 import { logout } from "../redux/slice/authSlice";
-
+// import { useNavigate } from "react-router-dom";
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function PrivateNavbar() {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const logoutHandler = () => {
     dispatch(logout());
     localStorage.removeItem("userinfo");
+    setTimeout(() => {
+      navigate("/");
+    }, 2000);
   };
   return (
     <Disclosure as='nav' className='bg-white '>
