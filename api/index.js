@@ -16,7 +16,7 @@ const corsOptions = {
 };
 app.get("/", (req, res) => {
   res.json("Server is running");
-}); 
+});
 app.use(cors(corsOptions));
 // Middleware to parse JSON requests
 app.use(express.json());
