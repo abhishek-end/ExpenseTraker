@@ -2,24 +2,35 @@ import React from "react";
 import { FaUserCircle, FaEnvelope, FaLock } from "react-icons/fa";
 import { useFormik } from "formik";
 import UpdatePassword from "./UpdatePassword";
+import { useMutation } from "@tanstack/react-query";
+import { updateProfileAPI } from "../../services/users/userServices";
 
 const UserProfile = () => {
+  const { isError, isSuccess, mutateAsync, error } = useMutation({
+    mutationFn: updateProfileAPI,
+    mutationKey: ["update-profile"],
+  });
+
   const formik = useFormik({
     initialValues: {
       email: "",
       username: "",
     },
-
     //Submit
     onSubmit: (values) => {
-      console.log(values);
+      mutateAsync(values).then((data) => {
+        console.log(data);
+      }).catch((e) => {
+        console.log(e);
+        
+      });
     },
   });
   return (
     <>
       <div className='max-w-4xl mx-auto my-10 p-8 bg-white rounded-lg shadow-md'>
         <h1 className='mb-2 text-2xl text-center font-extrabold'>
-          Welcome xpenseTracker
+          Welcome {}
           <span className='text-gray-500 text-sm ml-2'>info@gmail.com</span>
         </h1>
         <h3 className='text-xl font-semibold text-gray-800 mb-4'>

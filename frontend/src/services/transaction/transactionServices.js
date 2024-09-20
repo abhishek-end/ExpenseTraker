@@ -28,33 +28,33 @@ export const addTransactionAPI = async ({
   );
   return response.data;
 };
-// //!ListCategoryAPI
-// export const ListCategoryAPI = async () => {
-//   const response = await axios.get(`${BASE_URL}/category/lists`, {
-//     headers: {
-//       Authorization: [`Bearer ${token}`],
-//     },
-//   });
-//   return response.data;
-// };
-// //!updateAPI
-// export const updateAPI = async ({ name, type, id }) => {
-//   const response = await axios.put(
-//     `${BASE_URL}/category/update/${id}`,
-//     { name, type },
-//     {
-//       headers: {
-//         Authorization: [`Bearer ${token}`],
-//       },
-//     }
-//   );
-//   return response.data;
-// };
-// export const DeleteCategoryAPI = async (id) => {
-//   const response = await axios.delete(`${BASE_URL}/category/delete/${id}`, {
-//     headers: {
-//       Authorization: [`Bearer ${token}`],
-//     },
-//   });
-//   return response.data;
-// };
+// //!ListTransactionAPI
+export const ListTransactionAPI = async ({
+  startDate,
+  endDate,
+  type,
+  category,
+}) => {
+  const response = await axios.get(`${BASE_URL}/transaction/lists/`, {
+    params: {
+      category,
+      endDate,
+      startDate,
+      type,
+    },
+    headers: {
+      Authorization: [`Bearer ${token}`],
+    },
+  });
+  return response.data;
+};
+
+//!DeleteTransactionAPI
+export const DeleteTransactionAPI = async (id) => {
+  const response = await axios.delete(`${BASE_URL}/transaction/${id}`, {
+    headers: {
+      Authorization: [`Bearer ${token}`],
+    },
+  });
+  return response.data;
+};

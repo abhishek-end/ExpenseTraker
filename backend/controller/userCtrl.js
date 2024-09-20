@@ -6,22 +6,17 @@ const jwt = require("jsonwebtoken");
 const userController = {
   register: asyncHandler(async (req, res) => {
     const { username, email, password } = req.body;
-    console.log(req.body, typeof password);
-
     //! User Validate
     if ((!username, !email, !password)) {
       throw new Error("Please Provide all the details");
     }
-
     //! Check if email exists
     const UserExist = await User.findOne({ email });
     if (UserExist) {
       throw new Error("User Already Exists");
     }
-
     //! Hash the user password
-
-    const hashedPassword = await bcrypt.hash(String(password), 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     //* User Created and send it to the DB
     const userCreated = await User.create({
@@ -48,10 +43,7 @@ const userController = {
     }
 
     // Compare the password
-    const comparePassword = await bcrypt.compare(
-      String(password),
-      user.password
-    );
+    const comparePassword = await bcrypt.compare(password, user.password);
 
     if (!comparePassword) {
       throw new Error("Invalid Password");
@@ -67,7 +59,7 @@ const userController = {
       username: user.username,
       token,
       email: user.email,
-      id: user._id,
+      username: user.username,
     });
   }),
   profile: asyncHandler(async (req, res) => {
@@ -89,16 +81,16 @@ const userController = {
     }
 
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(String(newPassword), salt);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
     user.password = hashedPassword;
-    console.log(hashedPassword);
-
+    user.passwordChangedAt = Date.now();
     //! Re-save the newPassword
     await user.save();
     res.json({
       message: "Password Change Successfully",
     });
   }),
+
   updateUserProfile: asyncHandler(async (req, res) => {
     const { username, email } = req.body;
     const user = await User.findByIdAndUpdate(

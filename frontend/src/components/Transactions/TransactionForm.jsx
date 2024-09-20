@@ -44,7 +44,7 @@ const TransactionForm = () => {
     },
     validationSchema,
     onSubmit: (values) => {
-      mutateAsync(values).then((data) => navigate("/categories"));
+      mutateAsync(values).then((data) => navigate("/dashboard"));
     },
   });
 
