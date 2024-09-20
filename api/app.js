@@ -27,7 +27,7 @@ app.use("/", transactionRouter);
 // Error-handling middleware
 app.use(errorHandle);
 
-// Start the server
+// Start the server h
 if (require.main === module) {
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => {
