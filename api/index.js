@@ -13,6 +13,8 @@ connectDB();
 
 const corsOptions = {
   origin: ["http://localhost:5173"],
+  Credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
 };
 app.get("/", (req, res) => {
   res.json("Server is running");
