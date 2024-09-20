@@ -12,7 +12,7 @@ const app = express();
 connectDB();
 
 const corsOptions = {
-  origin: ["http://localhost:5173"],
+  origin: ["http://localhost:5173", "https://expense-traker-six.vercel.app/"],
   Credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
 };
