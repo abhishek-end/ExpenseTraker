@@ -12,7 +12,8 @@ const app = express();
 connectDB();
 
 const corsOptions = {
-  origin: ["http://localhost:5173"],
+  // origin: ["http://localhost:5173"],
+  origin: ["https://xpensetracker-black.vercel.app/"],
 };
 
 app.use(cors(corsOptions));
